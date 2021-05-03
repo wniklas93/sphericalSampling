@@ -64,6 +64,30 @@ def sphere_2_euclid(p):
     return p_euclid_3d
 
 
+def polar_2_euclid(p):
+    '''
+    This function transforms points in polar coordinates representation to
+    points in euclidean coordinates representation
+
+    Parameters:
+    ___________
+    p:                  Points of R^2 in polar representation
+
+    return:
+    _______
+    p_euclid_d:         Points of R^2 in euclidean representation
+    '''
+    p = np.atleast_2d(p)
+
+    r = p[:,0]
+    phi = p[:,1]
+
+    x = r * np.cos(phi)
+    y = r * np.sin(phi)
+
+    p_euclid_2d = np.column_stack((x,y))
+    return p_euclid_2d
+
 def plot_3D(p, title):
     '''
     This functions plots the given points in the 3D space. The given
@@ -84,7 +108,7 @@ def plot_3D(p, title):
     fig = plt.figure(figsize=(10,10))
     ax = fig.add_subplot(111, projection='3d')
 
-    ax.scatter(p[:,0], p[:,1], p[:,2], color='c', s=20)
+    ax.scatter(p[:,0], p[:,1], p[:,2], color='b', s=20)
 
     ax.set_xlim([-1,1])
     ax.set_ylim([-1,1])
@@ -97,7 +121,32 @@ def plot_3D(p, title):
     plt.show()
 
 
+def plot_2D(p, title):
+    '''
+    This functions plots the given points in the 2D space. The given
+    points are elements of R^2.
 
+    Parameters:
+    ___________
+    p:                              To be plotted points
+    title:                          Title of plot
+
+
+    return:
+    _______
+    -
+
+    '''
+    fig = plt.figure(figsize=(10,10))
+    ax = fig.add_subplot(111)
+
+    ax.scatter(p[:,0], p[:,1], color='b', s=20)
+
+    ax.set_xlabel("x-Axis")
+    ax.set_ylabel("y-Axis")
+    ax.title.set_text(title)
+    plt.tight_layout()
+    plt.show()
 
 
 
