@@ -140,7 +140,9 @@ def fibonacci_lattice_unitDisc(N):
 def spherical_cap_discrepancy(p):
     '''
     This function returns the spherical set discrepancy of the given point set p
-    on the unit sphere. (p in S^2)
+    on the unit sphere (p in S^2). The spherical discrepancy is a measure for
+    the uniformity of a set over the sphere. Note: The current implementation only
+    supports 1-D (Single point) and 2-D (multiple points) as input.
 
     Parameters:
     ___________
@@ -152,7 +154,12 @@ def spherical_cap_discrepancy(p):
 
     Source:
     _______
+    Handbook of Geomathematics, Numerical Integration on the Sphere, Willi Freeden et al., 2015
     '''
+
+    #Number of points:
+    p = np.atleast_2d(p)
+    N = np.shape(p)[0]
 
     #Arbitrary center points of caps on unit sphere
     W = 21
@@ -170,48 +177,43 @@ def spherical_cap_discrepancy(p):
     T = 21
     t = np.linspace(-1,1,T,endpoint=True)
 
-    #Points within cap specifications
-    c_wt = [p @ w_euclid_3d.T > t]
+    #Points within cap specifications:
+    dist = (p @ w_euclid_3d.T).T[:,:,None]                  #Point-Center distance
+    mask = dist > t
 
+    mask = np.einsum('wpt->wtp', mask)                      #Mask for points in caps
 
+    #Lebesgue measure for spherical caps (Numerical
+    #Integration on the sphere):
+    A = 2*np.pi*(1-t)/(4*np.pi)
+
+    #Spherical cap discrepancy:
+    mSet = np.sum(mask,axis=-1)/N
+
+    D = np.abs(mSet-A[None,:])                              #Discrepancies
+    D = np.amax(D)                                          #get supremum
+
+    return D
 
 #%%
 
-W = 21
-w_theta = np.linspace(0,np.pi,W,endpoint=True)
-w_phi = np.linspace(0,2*np.pi,W,endpoint=True)
-w_r = [1]*W
-
-w_sphere = np.column_stack((w_r,
-                                w_phi,
-                                w_theta))
-
-w_euclid_3d = utilities.sphere_2_euclid(w_sphere)
-
-t = np.array([-1,-0.5,0,0.5,1])
 
 
-
-
-sk = (w_euclid_3d[:2] @ w_euclid_3d.T).T[:,:,None]
-
-mask = sk > t
-
-sk = np.einsum('kli->kil', mask)
-
-w_euclid_3d[:2][:,:,None][sk]
-
-
-
-
-
-
-
-
-
-
-
-
+# t = np.array([[[1,2,3],
+#                 [1,2,3]],
+#
+#                 [[4,5,6],
+#                 [4,5,6]],
+#
+#                 [[4,5,6],
+#                 [4,5,6]]])
+#
+# f = np.sum(t,axis=-1)
+# f
+#
+# A = np.array([2,4])
+#
+# f - A[None,:]
 
 
 
