@@ -18,7 +18,7 @@ def sampleUnitSphere_statistical_normal(N):
 
     return:
     _______
-    p_euclide_2d:               Sample positions in euclidean coordinates
+    p_euclid_2d:               Sample positions in euclidan coordinates
     p_sph:                      Sample positions in spherical coordinates
 
     Source:
@@ -51,7 +51,7 @@ def sampleUnitSphere_geometric_fibonacci(N):
 
     return:
     _______
-    p_euclide_3d:               Sample positions in euclidean coordinates
+    p_euclid_3d:               Sample positions in euclidan coordinates
     p_sph:                      Sample positions in spherical coordinates
 
     Source:
@@ -92,7 +92,7 @@ def fibonacci_lattice_unitSquare(N):
 
     return:
     _______
-    p_euclide_2d:                   Lattice coordinates in cartesian coordinates
+    p_euclid_2d:                   Lattice coordinates in cartesian coordinates
 
     Source:
     _______
@@ -117,7 +117,7 @@ def fibonacci_lattice_unitDisc(N):
 
     return:
     _______
-    p_euclide_2d:           Lattice coordinates in cartesian coordinates
+    p_euclid_2d:           Lattice coordinates in cartesian coordinates
     p_pol:                  Lattice coordinates in polar coordinates
 
     Source:
@@ -132,9 +132,9 @@ def fibonacci_lattice_unitDisc(N):
     r = np.sqrt(n/N)
 
     p_pol = np.column_stack((r,phi))
-    p_euclide_2d = utilities.polar_2_euclid(p_pol)
+    p_euclid_2d = utilities.polar_2_euclid(p_pol)
 
-    return p_euclide_2d, p_pol
+    return p_euclid_2d, p_pol
 
 
 def spherical_cap_discrepancy(p):
