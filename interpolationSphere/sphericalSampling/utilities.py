@@ -199,7 +199,7 @@ def SurfacePlot(samplePoints, data, title):
     p2d = np.vstack([phi,theta]).T
     d2d = sp.spatial.Delaunay(p2d)
 
-    fig = mlab.figure(1, bgcolor=(1, 0.7, 1), fgcolor=(0.5, 0.5, 0.5))
+    fig = mlab.figure(figure = title, bgcolor=(1, 0.7, 1), fgcolor=(0.5, 0.5, 0.5))
 
     # Generate triangular Mesh:
     tmesh = mlab.triangular_mesh(X, Y, Z, d2d.vertices,
