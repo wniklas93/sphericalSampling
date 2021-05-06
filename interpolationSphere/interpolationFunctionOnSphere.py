@@ -13,7 +13,7 @@ from interpolationSphere.sphericalSampling import utilities
 soundPressureFunc = lambda phi, theta, sf: np.sinc(sf*phi/np.pi)*np.sinc(sf*(theta-np.pi/2)/np.pi)
 
 N = 2000                     #Number of points
-sf = 5                      #sharpening factor for directivity pattern
+sf = 5                       #sharpening factor for directivity pattern
 
 p_euclid_f, p_sphere_f = uniformSampling_unitSphere.sampleUnitSphere_geometric_fibonacci(N)
 phi = p_sphere_f[:,1]
@@ -27,14 +27,24 @@ s = soundPressureFunc(phi, theta, sf)
 #%%
 #Define Interpolation points:
 p_euclid_i, p_sphere_i = uniformSampling_unitSphere.sampleUnitSphere_statistical_normal(N)
-s_ref = soundPressureFunc(phi, theta, sf)
-#utilities.SurfacePlot(p_sphere_f[:,1:], s, 'Sampled Sound Pressure (Interpolation Reference)')
+s_ref = soundPressureFunc(p_sphere_i[:,1], p_sphere_i[:,2], sf)
+#utilities.SurfacePlot(p_sphere_i[:,1:], s_ref, 'Sampled Sound Pressure (Interpolation Reference)')
 
 #%%
 #Interpolation:
-si = interpolationOnSphere.interpolation_sphericalHarmonics(p_sphere_i[1:,:],
-                                                            p_sphere_f[1:,:],
+si = interpolationOnSphere.interpolation_sphericalHarmonics(p_sphere_i[:,1:],
+                                                            p_sphere_f[:,1:],
                                                             s)
+
+#utilities.SurfacePlot(p_sphere_i[:,1:], si, 'Sampled Sound Pressure (Interpolant)')
+
+
+#%%
+#Error Evaluation:
+err_sh = interpolationOnSphere.max_squaredError(s_ref, si)
+
+
+
 
 
 
