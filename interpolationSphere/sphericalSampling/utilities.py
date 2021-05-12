@@ -210,7 +210,23 @@ def SurfacePlot(samplePoints, data, title):
     mlab.axes(extent=(0,1,0,1,0,1))
     mlab.show()
 
+def tpf(x,l):
+    '''
+    Evaluated truncated power function (tpf) at given positions.
 
+    Parameters:
+    ___________
+    x:                      To be evaluated positions
+    l:                      To be used exponent
+
+    return:
+    _______
+    y:                      Evaluations of tpf at given positions
+    '''
+
+    x[x<0] = 0
+
+    return x**l
 
 
 

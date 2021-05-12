@@ -18,7 +18,7 @@ def sampleUnitSphere_statistical_normal(N):
 
     return:
     _______
-    p_euclid_2d:               Sample positions in euclidan coordinates
+    p_euclid_3d:                Sample positions in euclidan coordinates
     p_sph:                      Sample positions in spherical coordinates
 
     Source:
@@ -51,7 +51,7 @@ def sampleUnitSphere_geometric_fibonacci(N):
 
     return:
     _______
-    p_euclid_3d:               Sample positions in euclidan coordinates
+    p_euclid_3d:                Sample positions in euclidan coordinates
     p_sph:                      Sample positions in spherical coordinates
 
     Source:
@@ -195,25 +195,44 @@ def spherical_cap_discrepancy(p):
 
     return D
 
+def sampleUnitSphere_geometric_Wolfgang(N):
+    """
+    This function creates azimuth and elevation angles such that they
+    uniformly sample a sphere surface with N points.
+
+    Parameters:
+    ___________
+    N:                      Number of points within the lattice
+
+    return:
+    _______
+
+    p_euclid_3d:               Sample positions in euclidan coordinates
+    p_sph:                     Sample positions in spherical coordinates
+
+    Source:
+    _______
+    Comments on Generating sensor signals in isotropic noise fields, E. A. P. Habets and S. Gannot, 2010
+
+    """
+    k = np.arange(1,N+1)
+    h = -1+2*(k-1)/(N-1)
+    elevation = np.arccos(h)
+    azimuth = np.cumsum((np.asarray([0]+list(3.6/np.sqrt(N*(1-h**2))[1:-1]) +[0]) )%(2*np.pi))%(2*np.pi)
+    azimuth[-1]=0
+
+    p_sph = np.column_stack(([1]*N,
+                             azimuth,
+                             elevation))
+
+    p_euclid_3d = utilities.sphere_2_euclid(p_sph)
+
+    return p_euclid_3d, p_sph
+
+
 #%%
 
 
-
-# t = np.array([[[1,2,3],
-#                 [1,2,3]],
-#
-#                 [[4,5,6],
-#                 [4,5,6]],
-#
-#                 [[4,5,6],
-#                 [4,5,6]]])
-#
-# f = np.sum(t,axis=-1)
-# f
-#
-# A = np.array([2,4])
-#
-# f - A[None,:]
 
 
 

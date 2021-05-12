@@ -28,26 +28,30 @@ s = soundPressureFunc(phi, theta, sf)
 #Define Interpolation points:
 p_euclid_i, p_sphere_i = uniformSampling_unitSphere.sampleUnitSphere_statistical_normal(N)
 s_ref = soundPressureFunc(p_sphere_i[:,1], p_sphere_i[:,2], sf)
-#utilities.SurfacePlot(p_sphere_i[:,1:], s_ref, 'Sampled Sound Pressure (Interpolation Reference)')
+utilities.SurfacePlot(p_sphere_i[:,1:], s_ref, 'Sampled Sound Pressure (Interpolation Reference)')
 
 #%%
 #Interpolation:
-si = interpolationOnSphere.interpolation_sphericalHarmonics(p_sphere_i[:,1:],
-                                                            p_sphere_f[:,1:],
-                                                            s)
+si_sh = interpolationOnSphere.interpolation_sphericalHarmonics(p_sphere_i[:,1:],
+                                                               p_sphere_f[:,1:],
+                                                               s)
 
-#utilities.SurfacePlot(p_sphere_i[:,1:], si, 'Sampled Sound Pressure (Interpolant)')
+si_l = interpolationOnSphere.interpolation_lagrange(p_euclid_i,
+                                                    p_euclid_f,
+                                                    s)
+
+utilities.SurfacePlot(p_sphere_i[:,1:], si_l, 'Sampled Sound Pressure (Interpolant)')
 
 
 #%%
 #Error Evaluation:
-err_sh = interpolationOnSphere.max_squaredError(s_ref, si)
+err_sh = interpolationOnSphere.max_squaredError(s_ref, si_sh)
+err_l = interpolationOnSphere.max_squaredError(s_ref, si_l)
 
 
 
 
-
-
+#%%
 
 
 #%%
