@@ -2,6 +2,7 @@ import numpy as np
 import scipy as sp
 
 from interpolationSphere.sphericalSampling import utilities
+from interpolationSphere.sphericalSampling import uniformSampling_unitSphere
 ################################################################################
 #########################Spherical Harmonics####################################
 def interpolation_sphericalHarmonics(pi, pm, sm):
@@ -162,7 +163,7 @@ def _coeffs_sphericalHarmonics(pm,sm,L):
 
 ################################################################################
 ##########################Lagrangian Splines####################################
-def interpolation_lagrange(pi,pm,sm):
+def interpolation_lagrange(pi,pm,sm,kernel):
     '''
     This functions returns the interpolant at the points of interest (pi) for given
     supporting positions. The interpolation is based on cubic Lagrangian polynomials.
@@ -174,6 +175,7 @@ def interpolation_lagrange(pi,pm,sm):
     pi:                 Interpolation positions (Points of interest)
     pm:                 Positions of supporting points
     sm:                 Sample values of supporting points
+    kernel:             Kernel functional used for interpolation
 
     return:
     _______
@@ -181,23 +183,23 @@ def interpolation_lagrange(pi,pm,sm):
 
     Source:
     _______
-
+    -   Lectures on Constructive Approximation, Volker Michel
     '''
 
     #get coefficients for Lagrangian basis:
     # k_h @ A = I
-    k_h = _k_h('TPF', pm, pm)
+    k_h = _k_h(kernel, pm, pm)
     A = np.linalg.inv(k_h)
 
     #get Lagrangian basis for interpolation positions
-    L = _k_h('TPF', pm, pi).T @ A
+    L = _k_h(kernel, pm, pi).T @ A
 
     #Determine linear combination of Lagrangian basis functions:
     si = L @ sm
 
     return si
 
-def _k_h(type, x, y):
+def _k_h(kernel, x, y):
     '''
     Determines the kernel matrix for a given radial basis function
     (RBF) and given position sets x and y. This function supports three RBFs:
@@ -205,7 +207,7 @@ def _k_h(type, x, y):
 
     Parameters:
     ___________
-    rbf:                        Used RBF
+    kernel:                     Used kernel (must be functional!)
     x:                          Position set
     y:                          Positions set
 
@@ -226,21 +228,7 @@ def _k_h(type, x, y):
     sy = np.shape(y)[1]
 
     assert sx == sy, "Position sets must be in same space!"
-    s = sx
 
-    #Supported RBF:
-    rbf = {
-        'gaussian':            lambda r, sigma=1:       np.exp(-r*r/sigma),
-        'invMultiquadric':     lambda r, v=-1.1:        (1+r*r)**v,                 # v>0 & v not an integer
-        'TPF':                 lambda r,l=int(s/2)+1:   utilities.tpf(1-r,l)        # l must be greater than int(s/2) + 1
-                                                                                    # where s denotes the dimension of the data
-                                                                                    # points
-    }
-
-    try:
-        rbf = rbf[type]
-    except KeyError:
-        raise Exception("Radial basis function not supported!")
 
     #Point distances on the unit sphere:
     rr = 2*(1-x @ y.T)
@@ -253,10 +241,106 @@ def _k_h(type, x, y):
 
 
     #kernel matrix:
-    return rbf(r)
+    return kernel(r)
+
+def sequence_An(kernel):
+    '''
+    Determines the sequence An for the given kernel. The sequence An determines the
+    Sobolev space H(An,W), where W denotes the surface of the unit sphere,
+    the functions in H(An,W) are defined on. Note: The faster An increases
+    the less functions are in H(An,w) or the smaller the Sobolev space will be.
+
+    Parameters:
+    ___________
+    kernel:                     Kernel function
+
+    return:
+    _______
+    An:                         Sequence of Sobolev Space
+
+    Source:
+    _______
+    -   Lectures on Constructive Approximation, Volker Michel
+    '''
+    #Uniform sampling of sphere:
+    N = 10000
+    p_euclid_f, p_sphere_f = uniformSampling_unitSphere.sampleUnitSphere_geometric_fibonacci(N)
+
+    #Point-Point-Distances on the sphere (represented by scalar product):
+    x = p_euclid_f[0,:]
+    y = p_euclid_f
+    xy = x @ y.T
+
+    eps = 0.0001
+    assert np.all((xy <= 1+eps) & ((xy >= -1-eps)))==True, '''Scalar product of points on the sphere
+    must be in range [-1,1]!'''
+
+
+    xy[xy>1] = 1
+    xy[xy<-1] = -1
+
+    #Legendre coefficients for kernel:
+    Nl = 100
+    n = np.linspace(0, Nl, Nl+1, endpoint=True)                         #Degree of Legendre polynomial
+    Pn = sp.special.eval_legendre(n[None,:],xy[:,None])
+
+    coeffs_n = kernel(2*(1-xy) @ Pn
+
+    AAn = 1/coeffs_n/(4*np.pi)*(2*n+1)
+    
+    eps = 0.1
+    assert np.all(AAn > -eps)==True, '''The sequence An must be real valued!'''
+    AAn[AAn<0]=0
+
+    An = np.sqrt(AAn)
+
+    return An
 
 
 
+def kernel(k_name, s=0):
+    '''
+    Returns the function for the given kernel name. Currently,
+    three kernels are supported: Gaussian RBF, Inverse Multiquadric RBF,
+    Truncated Power Functions (TPF)
+
+    Parameters:
+    ___________
+    k_name:                      Kernel name
+    s:                           Dimension kernel is defined on
+
+    return:
+    _______
+    kf:                          Kernel functional
+
+    Source:
+    _______
+    -   Meshfree Approximation Methods with MATLAB, Gregory E. Fasshauer
+    -   Lectures on Constructive Approximation, Volker Michel
+    '''
+
+    kernels = {
+        #Radial Basis Functions:
+        'gaussian':            lambda r, sigma=1:       np.exp(-r*r/sigma),
+        'invMultiquadric':     lambda r, v=-1.1:        (1+r*r)**v,                 # v>0 & v not an integer
+        'TPF':                 lambda r,l=int(s/2)+1:   utilities.tpf(0.3-r,l)      # l must be greater than int(s/2) + 1
+                                                                                    # where s denotes the dimension of the data
+                                                                                    # points
+        #Other Functioncs: ?
+    }
+
+    try:
+        kernel = kernels[k_name]
+    except KeyError:
+        raise Exception("Radial basis function not supported!")
+
+    return kernel
+
+
+
+#Cubic
+################################################################################
+#####################Derivative Lagrangian Splines##############################
 
 
 
