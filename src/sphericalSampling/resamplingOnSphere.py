@@ -1,8 +1,8 @@
 import numpy as np
 import scipy as sp
 
-from interpolationSphere.sphericalSampling import utilities
-from interpolationSphere.sphericalSampling import uniformSampling_unitSphere
+from sphericalSampling import utilities
+from sphericalSampling import uniformSampling_unitSphere
 ################################################################################
 #########################Spherical Harmonics####################################
 def interpolation_sphericalHarmonics(pi, pm, sm):
@@ -194,7 +194,8 @@ def interpolation_lagrange(pi,pm,sm,kernel):
     #get Lagrangian basis for interpolation positions
     L = _k_h(kernel, pm, pi).T @ A
 
-    #Determine linear combination of Lagrangian basis functions:
+    # Determine linear combination of Lagrangian basis functions:
+    # Note: Only this operation is done online
     si = L @ sm
 
     return si
@@ -284,7 +285,7 @@ def sequence_An(kernel):
     n = np.linspace(0, Nl, Nl+1, endpoint=True)                         #Degree of Legendre polynomial
     Pn = sp.special.eval_legendre(n[None,:],xy[:,None])
 
-    coeffs_n = kernel(2*(1-xy) @ Pn
+    coeffs_n = kernel(2*(1-xy)) @ Pn
 
     AAn = 1/coeffs_n/(4*np.pi)*(2*n+1)
     
@@ -336,12 +337,10 @@ def kernel(k_name, s=0):
 
     return kernel
 
-
-
 #Cubic
 ################################################################################
 #####################Derivative Lagrangian Splines##############################
-
+#Todo: 
 
 
 

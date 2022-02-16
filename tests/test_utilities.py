@@ -1,7 +1,7 @@
 import numpy as np
 import scipy as sp
 
-from interpolationSphere.sphericalSampling import utilities
+from sphericalSampling import utilities
 ################################################################################
 def test_coordinateTransforms():
 

@@ -1,7 +1,7 @@
 import numpy as np
 import scipy as sp
 
-from interpolationSphere.sphericalSampling import utilities
+from sphericalSampling import utilities
 ################################################################################
 ##########################Uniform Sampling of Sphere (S**2)#####################
 def sampleUnitSphere_statistical_normal(N):
@@ -29,7 +29,7 @@ def sampleUnitSphere_statistical_normal(N):
     l = np.sqrt(Xx**2 + Yx**2 + Zx**2)
 
     #Add those 3 random variables -> Since all points lie on the sphere they got
-    #the same probability:
+    #the same probability (the probability depends on the distance to the origin):
     #1) [x,y,z]:
     p_euclid_3d = np.column_stack((Xx/l, Yx/l, Zx/l))
 
@@ -64,12 +64,14 @@ def sampleUnitSphere_geometric_fibonacci(N):
     alpha = p_square_2d[:,0]
     tau = p_square_2d[:,1]
 
-    #Wrap around sphere using Lamberts cylindrical equal-area mapping
+    # Project onto spherical surface by using Lamberts cylindrical equal-area mapping
+    # Note: Preservers area but heavily distoring shape
+    # Todo: Verify this equation
     x = 2*np.sqrt(tau-tau**2)*np.cos(2*np.pi*alpha)
     y = 2*np.sqrt(tau-tau**2)*np.sin(2*np.pi*alpha)
     z = 1 - 2*tau
 
-    #Evenly distributed points on the unit sphere:
+    #Uniformly distributed points on the surface of unit sphere:
     #1) [x,y,z]:
     p_euclid_3d = np.column_stack((x,
                                 y,
@@ -183,8 +185,8 @@ def spherical_cap_discrepancy(p):
 
     mask = np.einsum('wpt->wtp', mask)                      #Mask for points in caps
 
-    #Lebesgue measure for spherical caps (Numerical
-    #Integration on the sphere):
+    # Lebesgue measure for spherical caps (Numerical
+    # integration on the sphere):
     A = 2*np.pi*(1-t)/(4*np.pi)
 
     #Spherical cap discrepancy:
@@ -195,7 +197,7 @@ def spherical_cap_discrepancy(p):
 
     return D
 
-def sampleUnitSphere_geometric_Wolfgang(N):
+def sampleUnitSphere_geometric_heuristic(N):
     """
     This function creates azimuth and elevation angles such that they
     uniformly sample a sphere surface with N points.
