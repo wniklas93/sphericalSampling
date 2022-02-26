@@ -4,7 +4,7 @@ import scipy as sp
 from sphericalSampling import utilities
 ################################################################################
 ##########################Uniform Sampling of Sphere (S**2)#####################
-def sampleUnitSphere_statistical_normal(N):
+def random(N):
     '''
     This function returns the sampling positions of a sphere which has been
     resampled uniformly. The sampling approach is based on normal distributions:
@@ -38,7 +38,7 @@ def sampleUnitSphere_statistical_normal(N):
 
     return p_euclid_3d, p_sphere
 
-def sampleUnitSphere_geometric_fibonacci(N):
+def fibonacci(N):
     '''
     This function returns a spherical Fibonacci lattice. By using the golden ration
     we can define a Fibonacci lattice on the unit disc/square. The set of points on
@@ -197,7 +197,7 @@ def spherical_cap_discrepancy(p):
 
     return D
 
-def sampleUnitSphere_geometric_heuristic(N):
+def generalized_spherical_spiral(N):
     """
     This function creates azimuth and elevation angles such that they
     uniformly sample a sphere surface with N points.
