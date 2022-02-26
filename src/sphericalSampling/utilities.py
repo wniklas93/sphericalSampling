@@ -108,7 +108,7 @@ def plot_3D(p, title):
 
     '''
     #Set colours and render
-    fig = plt.figure(figsize=(10,10))
+    fig = plt.figure(figsize=(6,6))
     ax = fig.add_subplot(111, projection='3d')
 
     ax.scatter(p[:,0], p[:,1], p[:,2], color='b', s=20)
@@ -162,7 +162,7 @@ def plot_2D(p, title):
     -
 
     '''
-    fig = plt.figure(figsize=(10,10))
+    fig = plt.figure(figsize=(5,5))
     ax = fig.add_subplot(111)
 
     ax.scatter(p[:,0], p[:,1], color='b', s=20)

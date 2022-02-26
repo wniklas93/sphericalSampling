@@ -141,7 +141,7 @@ def fibonacci_lattice_unitDisc(N):
 
 def spherical_cap_discrepancy(p):
     '''
-    This function returns the spherical set discrepancy of the given point set p
+    This function returns the spherical cap discrepancy of the given point set p
     on the unit sphere (p in S^2). The spherical discrepancy is a measure for
     the uniformity of a set over the sphere. Note: The current implementation only
     supports 1-D (Single point) and 2-D (multiple points) as input.

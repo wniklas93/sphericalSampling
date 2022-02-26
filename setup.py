@@ -29,6 +29,9 @@ if __name__ == "__main__":
             'tests': [
                 'pytest>=6.2.3',
             ],
+            'notebooks' : [
+                'notebook>=6.4.8'
+            ]
             # 'docs': [
             #     'matplotlib>=3.3.4',
             #     'sphinx>=4.3.0',
